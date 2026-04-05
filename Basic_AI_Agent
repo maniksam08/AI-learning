@@ -1,0 +1,39 @@
+from dotenv import load_dotenv
+load_dotenv()
+
+from langchain_core.tools import tool
+
+@tool
+def sum( a: int, b:int ):
+    """
+        it will return the sum of two numbers
+        Args:
+            a: Number one
+            b: Number two
+    """
+    return a+b
+
+@tool
+def multiply( a: int, b:int ):
+    """
+        it will return the product of two numbers
+        Args:
+            a: Number one
+            b: Number two
+    """
+    return a*b
+
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.agents import create_agent
+
+llm= ChatGoogleGenerativeAI( model="gemini-2.5-flash-lite")
+agent= create_agent(
+    model= llm,
+    tools= [ sum, multiply],
+    system_prompt=" You are a calculator which will add or multiply the numbers as per the need"
+)
+
+res= agent.invoke( { "messages":
+                    [{ "role": "user",
+                      "content": "what is addition and multiplication of 2 and 3 "}]})
+print(res['messages'][-1].content)
